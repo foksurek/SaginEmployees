@@ -1,9 +1,9 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace SaginEmployees.Models;
+namespace SaginEmployees.Dto;
 
-public class EmployeeModel
+public class EmployeeDto
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
