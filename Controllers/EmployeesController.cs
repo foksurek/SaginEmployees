@@ -6,6 +6,7 @@ using SaginEmployees.Services;
 
 namespace SaginEmployees.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class EmployeesController : Controller
@@ -14,32 +15,102 @@ public class EmployeesController : Controller
     public EmployeesController(MongoDbService mongoDb) => _mongoDb = mongoDb;
 
     [HttpGet("getEmployees")]
-    public async Task<List<EmployeeDto>> GetEmployees() =>
-        await _mongoDb.GetEmployees();
-    
+    public async Task<List<EmployeeDto>> GetEmployees()
+    {
+        var employeesFromCompany = await _mongoDb.GetEmployees();
+        return employeesFromCompany;
+    }
+
     [HttpGet("getEmployee/{id}")]
     public async Task<EmployeeDto> GetEmployee(string id) =>
         await _mongoDb.GetEmployee(id);
     
-    [HttpPost("AddEmployee")]
-    public async Task<OkObjectResult> AddEmployee(EmployeeDto employee)
+    
+    [HttpPost("DismissEmployee")]
+    public async Task DismissEmployee(string id)
     {
-        await _mongoDb.CreateEmployee(employee);
-        return Ok("Successfully added employee");
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Status = "Dismissed";
+        await _mongoDb.UpdateEmployee(id, employee);
     }
     
-    [HttpPut("UpdateEmployee/{id}")]
-    public async Task<OkObjectResult> UpdateEmployee(string id, EmployeeDto employee)
+    [HttpPost("HireEmployee")]
+    public async Task HireEmployee(string id)
     {
-        employee.Id = id;
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Status = "Hired";
         await _mongoDb.UpdateEmployee(id, employee);
-        return Ok("Successfully updated employee");
     }
-
-    [HttpDelete("DeleteEmployee/{id}")]
-    public async Task<OkObjectResult> DeleteEmployee(string id)
+    
+    [HttpPost("ChangeSalary")]
+    public async Task ChangeSalary(string id, double amount)
     {
-        await _mongoDb.DeleteEmployee(id);
-        return Ok($"Successfully removed employee({id})");
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Salary.Amount = amount;
+        await _mongoDb.UpdateEmployee(id, employee);
+    }
+    
+    [HttpPost("ChangeCurrency")]
+    public async Task ChangeDepartment(string id, string department)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Department = department;
+        await _mongoDb.UpdateEmployee(id, employee);
+    }
+    
+    [HttpPost("ChangeAddress")]
+    public async Task ChangeAddress(string id, Adress address)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Address = address;
+        await _mongoDb.UpdateEmployee(id, employee);
+    }
+    
+    [HttpPost("ChangePhone")]
+    public async Task ChangePhone(string id, string phone)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Phone = phone;
+        await _mongoDb.UpdateEmployee(id, employee);
+    }
+    
+    [HttpPost("ChangeEmail")]
+    public async Task ChangeEmail(string id, string email)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Email = email;
+        await _mongoDb.UpdateEmployee(id, employee);
+    }
+    
+    [HttpPost("ChangeName")]
+    public async Task ChangeName(string id, string name)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Name = name;
+        await _mongoDb.UpdateEmployee(id, employee);
+    }
+    
+    [HttpPost("ChangeState")]
+    public async Task ChangeState(string id, string state)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Address.State = state;
+        await _mongoDb.UpdateEmployee(id, employee);
+    }
+    
+    [HttpPost("ChangeCity")]
+    public async Task ChangeCity(string id, string city)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Address.City = city;
+        await _mongoDb.UpdateEmployee(id, employee);
+    }
+    
+    [HttpPost("ChangeStreet")]
+    public async Task ChangeStreet(string id, string street)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        employee.Address.Street = street;
+        await _mongoDb.UpdateEmployee(id, employee);
     }
 }
