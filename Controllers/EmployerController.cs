@@ -37,4 +37,49 @@ public class EmployerController : Controller
         await _mongoDb.DeleteEmployee(id);
         return Ok($"Successfully removed employee({id})");
     }
+    
+    [HttpGet("CalculateMonthlySalaryForEmployee/{id}")]
+    public async Task<JsonResult> CalculateMonthlySalaryForEmployee(string id)
+    {
+        var employee = await _mongoDb.GetEmployee(id);
+        var currency = await _mongoDb.GetCurrency(employee.Salary.CurrencyId);
+        var salary = employee.Salary.Amount;
+        var monthlySalaryInDollars = salary / currency.DolarRate;
+        var yearlySalaryInDollars = monthlySalaryInDollars * 12;
+
+        return Json(new
+        {
+            employee.Name,
+            employee.Salary.Amount,
+            employee.Salary.CurrencyId,
+            monthlySalaryInDollars,
+            yearlySalaryInDollars
+        });
+    }
+
+    [HttpGet("CalculateSalaryForDepartment/{name}")]
+    public async Task<JsonResult> CalculateSalaryForDepartment(string name)
+    {
+        var employees = await _mongoDb.GetEmployeesByDepartmentName(name);
+        double salaryInDollars = 0;
+        var employeesCount = employees.Count;
+        foreach (var employee in employees)
+        {
+            var currency = await _mongoDb.GetCurrency(employee.Salary.CurrencyId);
+            var salary = employee.Salary.Amount;
+            var monthlySalaryInDollars = salary / currency.DolarRate;
+            
+           salaryInDollars += monthlySalaryInDollars;
+        }
+        var yearlySalaryInDollars = salaryInDollars * 12;
+
+        return Json(new
+        {
+            name,
+            employeesCount,
+            salaryInDollars,
+            yearlySalaryInDollars
+            
+        });
+    }
 }

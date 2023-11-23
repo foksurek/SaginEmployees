@@ -24,6 +24,9 @@ public class MongoDbService
 
     public async Task<EmployeeDto> GetEmployee(string id) => 
         await _employeesCollection.Find(employee => employee.Id == id).FirstOrDefaultAsync();
+    
+    public async Task<List<EmployeeDto>> GetEmployeesByDepartmentName(string department) =>
+        await _employeesCollection.Find(employee => employee.Department == department).ToListAsync();
 
     public async Task AddEmployee(EmployeeDto employee) =>
         await _employeesCollection.InsertOneAsync(employee);
